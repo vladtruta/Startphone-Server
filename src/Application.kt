@@ -1,6 +1,7 @@
 package com.vladtruta
 
 import com.vladtruta.di.appModule
+import com.vladtruta.di.databaseModule
 import com.vladtruta.model.requests.ApplicationListRequest
 import com.vladtruta.model.requests.MissingTutorialRequest
 import com.vladtruta.model.requests.UserRequest
@@ -30,7 +31,7 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 fun Application.module(testing: Boolean = false) {
 
     startKoin {
-        modules(appModule)
+        modules(appModule + databaseModule)
     }
 
     val repository by inject<IAppRepo>()

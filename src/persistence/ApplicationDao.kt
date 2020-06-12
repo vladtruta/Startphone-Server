@@ -9,11 +9,11 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
     override fun getTutorial(id: Int): Tutorial? = transaction(appDatabase) {
         TutorialEntity.select { TutorialEntity.id eq id }.map {
             Tutorial(
-                it[TutorialEntity.id],
                 it[TutorialEntity.packageName],
                 it[TutorialEntity.title],
                 it[TutorialEntity.videoUrl],
-                it[TutorialEntity.rating]
+                it[TutorialEntity.rating],
+                it[TutorialEntity.id]
             )
         }.firstOrNull()
     }
@@ -21,18 +21,17 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
     override fun getTutorials(): List<Tutorial> = transaction(appDatabase) {
         TutorialEntity.selectAll().map {
             Tutorial(
-                it[TutorialEntity.id],
                 it[TutorialEntity.packageName],
                 it[TutorialEntity.title],
                 it[TutorialEntity.videoUrl],
-                it[TutorialEntity.rating]
+                it[TutorialEntity.rating],
+                it[TutorialEntity.id]
             )
         }
     }
 
     override fun insertTutorial(tutorial: Tutorial) = transaction(appDatabase) {
         TutorialEntity.insert { insertStatement ->
-            insertStatement[id] = tutorial.id
             insertStatement[packageName] = tutorial.packageName
             insertStatement[title] = tutorial.title
             insertStatement[videoUrl] = tutorial.videoUrl
@@ -174,5 +173,10 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
             updateStatement[name] = application.name
         }
         Unit
+    }
+
+    override fun reset() {
+        SchemaUtils.drop(UsersTutorialMissingRequestsEntity, UsersTutorialsWatchedEntity, UserEntity, ApplicationEntity, TutorialEntity)
+        SchemaUtils.drop(UsersTutorialMissingRequestsEntity, UsersTutorialsWatchedEntity, UserEntity, ApplicationEntity, TutorialEntity)
     }
 }

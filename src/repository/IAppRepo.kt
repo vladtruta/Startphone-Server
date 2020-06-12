@@ -7,6 +7,8 @@ import com.vladtruta.model.requests.WatchedTutorialRequest
 import com.vladtruta.model.responses.TutorialResponse
 
 interface IAppRepo {
+    fun initialize()
+
     fun getTutorialsByPackageName(packageName: String): List<TutorialResponse>
     fun insertOrUpdateUser(userRequest: UserRequest)
     fun insertOrUpdateApplications(applicationListRequest: ApplicationListRequest)

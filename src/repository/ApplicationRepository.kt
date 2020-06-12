@@ -12,6 +12,13 @@ import com.vladtruta.persistence.IAppDao
 
 class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
 
+    override fun initialize() {
+        applicationDao.reset()
+
+        applications.forEach { applicationDao.insertApplication(it) }
+        tutorials.forEach { applicationDao.insertTutorial(it) }
+    }
+
     override fun getTutorialsByPackageName(packageName: String): List<TutorialResponse> {
         return applicationDao.getTutorials().filter { it.packageName == packageName }.map { it.toTutorialResponse() }
     }
@@ -62,11 +69,11 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
 
                 applicationDao.updateTutorial(
                     Tutorial(
-                        existingTutorial.id,
                         existingTutorial.packageName,
                         existingTutorial.title,
                         existingTutorial.videoUrl,
-                        newOverallRating
+                        newOverallRating,
+                        existingTutorial.id
                     )
                 )
             }

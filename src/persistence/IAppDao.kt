@@ -24,4 +24,6 @@ interface IAppDao {
     fun getApplication(packageName: String): Application?
     fun insertApplication(application: Application)
     fun updateApplication(application: Application)
+
+    fun reset()
 }

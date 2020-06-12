@@ -9,7 +9,7 @@ val databaseModule = module {
 
 private fun provideDatabase(): Database {
     return Database.connect(
-        "jdbc:mysql://localhost:3306/restaurant?serverTimezone=UTC",
+        "jdbc:mysql://localhost:3306/startphone?serverTimezone=UTC",
         "com.mysql.cj.jdbc.Driver",
         "root",
         "12345678"

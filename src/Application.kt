@@ -35,6 +35,8 @@ fun Application.module(testing: Boolean = false) {
 
     val repository by inject<IAppRepo>()
 
+    repository.initialize()
+
     install(ContentNegotiation) {
         gson {
             setPrettyPrinting()

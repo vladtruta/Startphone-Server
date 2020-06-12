@@ -2,7 +2,7 @@ package com.vladtruta
 
 import com.vladtruta.di.appModule
 import com.vladtruta.di.databaseModule
-import com.vladtruta.model.jwt.EmailJWT
+import com.vladtruta.model.jwt.SimpleJWT
 import com.vladtruta.model.requests.ApplicationListRequest
 import com.vladtruta.model.requests.MissingTutorialRequest
 import com.vladtruta.model.requests.UserRequest
@@ -50,12 +50,12 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
-    val simpleJwt = EmailJWT("startphone-jwt-secret")
+    val simpleJwt = SimpleJWT("startphone-jwt-secret")
     install(Authentication) {
         jwt {
             verifier(simpleJwt.verifier)
             validate {
-                UserIdPrincipal(it.payload.getClaim("email").asString())
+                UserIdPrincipal(it.payload.getClaim("id").asString())
             }
         }
     }
@@ -66,7 +66,7 @@ fun Application.module(testing: Boolean = false) {
             try {
                 repository.insertOrUpdateUser(userRequest)
 
-                val authToken = simpleJwt.sign(userRequest.email!!)
+                val authToken = simpleJwt.sign(userRequest.id!!)
                 call.respond(mapOf(KEY_SUCCESS to true, KEY_DATA to authToken))
             } catch (e: Exception) {
                 call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
@@ -101,8 +101,8 @@ fun Application.module(testing: Boolean = false) {
             post("/missing") {
                 val missingTutorialRequest = call.receive<MissingTutorialRequest>()
                 try {
-                    val email = call.principal<UserIdPrincipal>()?.name ?: error("Invalid Session")
-                    repository.updateTutorialMissing(email, missingTutorialRequest)
+                    val id = call.principal<UserIdPrincipal>()?.name ?: error("Invalid Session")
+                    repository.updateTutorialMissing(id, missingTutorialRequest)
                     call.respond(mapOf(KEY_SUCCESS to true))
                 } catch (e: Exception) {
                     call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
@@ -112,8 +112,8 @@ fun Application.module(testing: Boolean = false) {
             post("/watched") {
                 val watchedTutorialRequest = call.receive<WatchedTutorialRequest>()
                 try {
-                    val email = call.principal<UserIdPrincipal>()?.name ?: error("Invalid Session")
-                    repository.updateWatchedTutorial(email, watchedTutorialRequest)
+                    val id = call.principal<UserIdPrincipal>()?.name ?: error("Invalid Session")
+                    repository.updateWatchedTutorial(id, watchedTutorialRequest)
                     call.respond(mapOf(KEY_SUCCESS to true))
                 } catch (e: Exception) {
                     call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))

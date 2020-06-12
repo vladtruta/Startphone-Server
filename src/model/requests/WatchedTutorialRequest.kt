@@ -9,10 +9,10 @@ data class WatchedTutorialRequest(
     @SerializedName("useful")
     val useful: Boolean? = null
 ) {
-    fun toWatchedTutorial(email: String): WatchedTutorial? {
+    fun toWatchedTutorial(id: String): WatchedTutorial? {
         tutorialId ?: return null
         useful ?: return null
 
-        return WatchedTutorial(email, tutorialId, useful)
+        return WatchedTutorial(id, tutorialId, useful)
     }
 }

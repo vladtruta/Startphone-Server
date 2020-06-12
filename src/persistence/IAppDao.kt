@@ -9,15 +9,15 @@ interface IAppDao {
     fun updateTutorial(tutorial: Tutorial)
     fun deleteTutorial(id: Int)
 
-    fun getUser(email: String): User?
+    fun getUser(id: String): User?
     fun insertUser(user: User)
     fun updateUser(user: User)
 
-    fun getWatchedTutorial(email: String, tutorialId: Int): UsersTutorialsWatched?
+    fun getWatchedTutorial(id: String, tutorialId: Int): UsersTutorialsWatched?
     fun insertWatchedTutorial(usersTutorialsWatched: UsersTutorialsWatched)
     fun updateWatchedTutorial(usersTutorialsWatched: UsersTutorialsWatched)
 
-    fun getTutorialMissing(email: String, packageName: String): UsersTutorialMissing?
+    fun getTutorialMissing(id: String, packageName: String): UsersTutorialMissing?
     fun insertTutorialMissing(usersTutorialMissing: UsersTutorialMissing)
     fun updateTutorialMissing(usersTutorialMissing: UsersTutorialMissing)
 

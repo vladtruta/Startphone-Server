@@ -12,6 +12,6 @@ interface IAppRepo {
     fun getTutorialsByPackageName(packageName: String): List<TutorialResponse>
     fun insertOrUpdateUser(userRequest: UserRequest)
     fun insertOrUpdateApplications(applicationListRequest: ApplicationListRequest)
-    fun updateWatchedTutorial(email: String, watchedTutorialRequest: WatchedTutorialRequest)
-    fun updateTutorialMissing(email: String, missingTutorialRequest: MissingTutorialRequest)
+    fun updateWatchedTutorial(id: String, watchedTutorialRequest: WatchedTutorialRequest)
+    fun updateTutorialMissing(id: String, missingTutorialRequest: MissingTutorialRequest)
 }

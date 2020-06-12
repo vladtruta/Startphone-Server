@@ -56,10 +56,10 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
         Unit
     }
 
-    override fun getUser(email: String): User? = transaction(appDatabase) {
-        UserEntity.select { UserEntity.email eq email }.map {
+    override fun getUser(id: String): User? = transaction(appDatabase) {
+        UserEntity.select { UserEntity.id eq id }.map {
             User(
-                it[UserEntity.email],
+                it[UserEntity.id],
                 it[UserEntity.dateOfBirth],
                 it[UserEntity.gender]
             )
@@ -68,7 +68,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
 
     override fun insertUser(user: User) = transaction(appDatabase) {
         UserEntity.insert { insertStatement ->
-            insertStatement[email] = user.email
+            insertStatement[id] = user.id
             insertStatement[gender] = user.gender
             insertStatement[dateOfBirth] = user.dateOfBirth
         }
@@ -76,21 +76,21 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
     }
 
     override fun updateUser(user: User) = transaction(appDatabase) {
-        UserEntity.update({ UserEntity.email eq user.email }) { updateStatement ->
-            updateStatement[email] = user.email
+        UserEntity.update({ UserEntity.id eq user.id }) { updateStatement ->
+            updateStatement[id] = user.id
             updateStatement[gender] = user.gender
             updateStatement[dateOfBirth] = user.dateOfBirth
         }
         Unit
     }
 
-    override fun getWatchedTutorial(email: String, tutorialId: Int): UsersTutorialsWatched? =
+    override fun getWatchedTutorial(id: String, tutorialId: Int): UsersTutorialsWatched? =
         transaction(appDatabase) {
             UsersTutorialsWatchedEntity.select {
-                (UsersTutorialsWatchedEntity.userEmail eq email) and (UsersTutorialsWatchedEntity.tutorialId eq tutorialId)
+                (UsersTutorialsWatchedEntity.userId eq id) and (UsersTutorialsWatchedEntity.tutorialId eq tutorialId)
             }.map {
                 UsersTutorialsWatched(
-                    it[UsersTutorialsWatchedEntity.userEmail],
+                    it[UsersTutorialsWatchedEntity.userId],
                     it[UsersTutorialsWatchedEntity.tutorialId],
                     it[UsersTutorialsWatchedEntity.watchCount],
                     it[UsersTutorialsWatchedEntity.rating]
@@ -100,7 +100,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
 
     override fun insertWatchedTutorial(usersTutorialsWatched: UsersTutorialsWatched) = transaction(appDatabase) {
         UsersTutorialsWatchedEntity.insert { insertStatement ->
-            insertStatement[userEmail] = usersTutorialsWatched.userEmail
+            insertStatement[userId] = usersTutorialsWatched.userId
             insertStatement[tutorialId] = usersTutorialsWatched.tutorialId
             insertStatement[watchCount] = usersTutorialsWatched.watchCount
             insertStatement[rating] = usersTutorialsWatched.rating
@@ -109,8 +109,8 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
     }
 
     override fun updateWatchedTutorial(usersTutorialsWatched: UsersTutorialsWatched) = transaction(appDatabase) {
-        UsersTutorialsWatchedEntity.update({ (UsersTutorialsWatchedEntity.userEmail eq usersTutorialsWatched.userEmail) and (UsersTutorialsWatchedEntity.tutorialId eq usersTutorialsWatched.tutorialId) }) { updateStatement ->
-            updateStatement[userEmail] = usersTutorialsWatched.userEmail
+        UsersTutorialsWatchedEntity.update({ (UsersTutorialsWatchedEntity.userId eq usersTutorialsWatched.userId) and (UsersTutorialsWatchedEntity.tutorialId eq usersTutorialsWatched.tutorialId) }) { updateStatement ->
+            updateStatement[userId] = usersTutorialsWatched.userId
             updateStatement[tutorialId] = usersTutorialsWatched.tutorialId
             updateStatement[watchCount] = usersTutorialsWatched.watchCount
             updateStatement[rating] = usersTutorialsWatched.rating
@@ -118,13 +118,13 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
         Unit
     }
 
-    override fun getTutorialMissing(email: String, packageName: String): UsersTutorialMissing? =
+    override fun getTutorialMissing(id: String, packageName: String): UsersTutorialMissing? =
         transaction(appDatabase) {
             UsersTutorialMissingRequestsEntity.select {
-                (UsersTutorialMissingRequestsEntity.userEmail eq email) and (UsersTutorialMissingRequestsEntity.packageName eq packageName)
+                (UsersTutorialMissingRequestsEntity.userId eq id) and (UsersTutorialMissingRequestsEntity.packageName eq packageName)
             }.map {
                 UsersTutorialMissing(
-                    it[UsersTutorialMissingRequestsEntity.userEmail],
+                    it[UsersTutorialMissingRequestsEntity.userId],
                     it[UsersTutorialMissingRequestsEntity.packageName],
                     it[UsersTutorialMissingRequestsEntity.requestCount]
                 )
@@ -133,7 +133,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
 
     override fun insertTutorialMissing(usersTutorialMissing: UsersTutorialMissing) = transaction(appDatabase) {
         UsersTutorialMissingRequestsEntity.insert { insertStatement ->
-            insertStatement[userEmail] = usersTutorialMissing.userEmail
+            insertStatement[userId] = usersTutorialMissing.userId
             insertStatement[packageName] = usersTutorialMissing.packageName
             insertStatement[requestCount] = usersTutorialMissing.requestCount
         }
@@ -141,8 +141,8 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
     }
 
     override fun updateTutorialMissing(usersTutorialMissing: UsersTutorialMissing) = transaction(appDatabase) {
-        UsersTutorialMissingRequestsEntity.update({ (UsersTutorialMissingRequestsEntity.userEmail eq usersTutorialMissing.userEmail) and (UsersTutorialMissingRequestsEntity.packageName eq usersTutorialMissing.packageName) }) { updateStatement ->
-            updateStatement[userEmail] = usersTutorialMissing.userEmail
+        UsersTutorialMissingRequestsEntity.update({ (UsersTutorialMissingRequestsEntity.userId eq usersTutorialMissing.userId) and (UsersTutorialMissingRequestsEntity.packageName eq usersTutorialMissing.packageName) }) { updateStatement ->
+            updateStatement[userId] = usersTutorialMissing.userId
             updateStatement[packageName] = usersTutorialMissing.packageName
             updateStatement[requestCount] = usersTutorialMissing.requestCount
         }

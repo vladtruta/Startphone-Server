@@ -7,9 +7,9 @@ data class MissingTutorialRequest(
     @SerializedName("packageName")
     val packageName: String? = null
 ) {
-    fun toMissingTutorial(email: String): MissingTutorial? {
+    fun toMissingTutorial(id: String): MissingTutorial? {
         packageName ?: return null
 
-        return MissingTutorial(email, packageName)
+        return MissingTutorial(id, packageName)
     }
 }

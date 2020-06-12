@@ -26,7 +26,7 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
     override fun insertOrUpdateUser(userRequest: UserRequest) {
         val user = userRequest.toUser() ?: throw Exception("Invalid user request")
 
-        val userExists = applicationDao.getUser(user.email)
+        val userExists = applicationDao.getUser(user.id)
         userExists?.let {
             applicationDao.updateUser(user)
         } ?: run {
@@ -50,12 +50,12 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
         }
     }
 
-    override fun updateWatchedTutorial(email: String, watchedTutorialRequest: WatchedTutorialRequest) {
+    override fun updateWatchedTutorial(id: String, watchedTutorialRequest: WatchedTutorialRequest) {
         val watchedTutorial =
-            watchedTutorialRequest.toWatchedTutorial(email) ?: throw Exception("Invalid watched tutorial request")
+            watchedTutorialRequest.toWatchedTutorial(id) ?: throw Exception("Invalid watched tutorial request")
 
         val watchedTutorialExists =
-            applicationDao.getWatchedTutorial(watchedTutorial.email, watchedTutorial.tutorialId)
+            applicationDao.getWatchedTutorial(watchedTutorial.id, watchedTutorial.tutorialId)
         watchedTutorialExists?.let {
             val givenRating = if (watchedTutorial.useful) 1.0 else 0.0
 
@@ -80,7 +80,7 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
 
             applicationDao.updateWatchedTutorial(
                 UsersTutorialsWatched(
-                    watchedTutorial.email,
+                    watchedTutorial.id,
                     watchedTutorial.tutorialId,
                     it.watchCount + 1,
                     newRating
@@ -89,7 +89,7 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
         } ?: run {
             applicationDao.insertWatchedTutorial(
                 UsersTutorialsWatched(
-                    watchedTutorial.email,
+                    watchedTutorial.id,
                     watchedTutorial.tutorialId,
                     1,
                     if (watchedTutorial.useful) 1.0 else 0.0
@@ -98,16 +98,16 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
         }
     }
 
-    override fun updateTutorialMissing(email: String, missingTutorialRequest: MissingTutorialRequest) {
+    override fun updateTutorialMissing(id: String, missingTutorialRequest: MissingTutorialRequest) {
         val tutorialMissing =
-            missingTutorialRequest.toMissingTutorial(email) ?: throw Exception("Invalid missing tutorial request")
+            missingTutorialRequest.toMissingTutorial(id) ?: throw Exception("Invalid missing tutorial request")
 
         val tutorialMissingExists =
-            applicationDao.getTutorialMissing(tutorialMissing.email, tutorialMissing.packageName)
+            applicationDao.getTutorialMissing(tutorialMissing.id, tutorialMissing.packageName)
         tutorialMissingExists?.let {
             applicationDao.updateTutorialMissing(
                 UsersTutorialMissing(
-                    tutorialMissing.email,
+                    tutorialMissing.id,
                     tutorialMissing.packageName,
                     it.requestCount + 1
                 )
@@ -115,7 +115,7 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
         } ?: run {
             applicationDao.insertTutorialMissing(
                 UsersTutorialMissing(
-                    tutorialMissing.email,
+                    tutorialMissing.id,
                     tutorialMissing.packageName,
                     1
                 )

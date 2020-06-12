@@ -1,6 +1,6 @@
 package com.vladtruta.model.local
 
 data class MissingTutorial(
-    val idToken: String,
+    val email: String,
     val packageName: String
 )

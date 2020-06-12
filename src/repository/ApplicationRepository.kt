@@ -26,7 +26,7 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
     override fun insertOrUpdateUser(userRequest: UserRequest) {
         val user = userRequest.toUser() ?: throw Exception("Invalid user request")
 
-        val userExists = applicationDao.getUser(user.idToken)
+        val userExists = applicationDao.getUser(user.email)
         userExists?.let {
             applicationDao.updateUser(user)
         } ?: run {
@@ -55,7 +55,7 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
             watchedTutorialRequest.toWatchedTutorial() ?: throw Exception("Invalid watched tutorial request")
 
         val watchedTutorialExists =
-            applicationDao.getWatchedTutorial(watchedTutorial.idToken, watchedTutorial.tutorialId)
+            applicationDao.getWatchedTutorial(watchedTutorial.email, watchedTutorial.tutorialId)
         watchedTutorialExists?.let {
             val givenRating = if (watchedTutorial.useful) 1.0 else 0.0
 
@@ -80,7 +80,7 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
 
             applicationDao.updateWatchedTutorial(
                 UsersTutorialsWatched(
-                    watchedTutorial.idToken,
+                    watchedTutorial.email,
                     watchedTutorial.tutorialId,
                     it.watchCount + 1,
                     newRating
@@ -89,7 +89,7 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
         } ?: run {
             applicationDao.insertWatchedTutorial(
                 UsersTutorialsWatched(
-                    watchedTutorial.idToken,
+                    watchedTutorial.email,
                     watchedTutorial.tutorialId,
                     1,
                     if (watchedTutorial.useful) 1.0 else 0.0
@@ -103,11 +103,11 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
             missingTutorialRequest.toMissingTutorial() ?: throw Exception("Invalid missing tutorial request")
 
         val tutorialMissingExists =
-            applicationDao.getTutorialMissing(tutorialMissing.idToken, tutorialMissing.packageName)
+            applicationDao.getTutorialMissing(tutorialMissing.email, tutorialMissing.packageName)
         tutorialMissingExists?.let {
             applicationDao.updateTutorialMissing(
                 UsersTutorialMissing(
-                    tutorialMissing.idToken,
+                    tutorialMissing.email,
                     tutorialMissing.packageName,
                     it.requestCount + 1
                 )
@@ -115,7 +115,7 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
         } ?: run {
             applicationDao.insertTutorialMissing(
                 UsersTutorialMissing(
-                    tutorialMissing.idToken,
+                    tutorialMissing.email,
                     tutorialMissing.packageName,
                     1
                 )

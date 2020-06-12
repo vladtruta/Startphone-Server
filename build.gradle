@@ -48,5 +48,5 @@ dependencies {
     implementation "org.jetbrains.exposed:exposed:$exposed_version"
 
     // JDBC
-    implementation "mysql.mysql-connector-java:$jdbc_version"
+    compile group: 'mysql', name: 'mysql-connector-java', version: "$jdbc_version"
 }

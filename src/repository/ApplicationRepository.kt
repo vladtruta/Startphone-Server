@@ -7,9 +7,14 @@ import com.vladtruta.model.requests.ApplicationListRequest
 import com.vladtruta.model.requests.MissingTutorialRequest
 import com.vladtruta.model.requests.UserRequest
 import com.vladtruta.model.requests.WatchedTutorialRequest
+import com.vladtruta.model.responses.TutorialResponse
 import com.vladtruta.persistence.IAppDao
 
 class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
+
+    override fun getTutorialsByPackageName(packageName: String): List<TutorialResponse> {
+        return applicationDao.getTutorials().filter { it.packageName == packageName }.map { it.toTutorialResponse() }
+    }
 
     override fun insertOrUpdateUser(userRequest: UserRequest) {
         val user = userRequest.toUser() ?: throw Exception("Invalid user request")

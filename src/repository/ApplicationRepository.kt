@@ -1,5 +1,6 @@
 package com.vladtruta.repository
 
+import com.vladtruta.model.local.Tutorial
 import com.vladtruta.model.local.UsersTutorialMissing
 import com.vladtruta.model.local.UsersTutorialsWatched
 import com.vladtruta.model.requests.ApplicationListRequest
@@ -13,7 +14,7 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
     override fun insertOrUpdateUser(userRequest: UserRequest) {
         val user = userRequest.toUser() ?: throw Exception("Invalid user request")
 
-        val userExists = applicationDao.getUserByIdToken(user.idToken)
+        val userExists = applicationDao.getUser(user.idToken)
         userExists?.let {
             applicationDao.updateUser(user)
         } ?: run {
@@ -45,7 +46,25 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
             applicationDao.getWatchedTutorial(watchedTutorial.idToken, watchedTutorial.tutorialId)
         watchedTutorialExists?.let {
             val givenRating = if (watchedTutorial.useful) 1.0 else 0.0
+
+            // Compute rating for tutorial, according to each user
             val newRating = (it.rating + givenRating) / 2
+
+            val tutorial = applicationDao.getTutorial(watchedTutorial.tutorialId)
+            tutorial?.let { existingTutorial ->
+                // Compute overall rating for tutorial
+                val newOverallRating = (existingTutorial.rating + givenRating) / 2
+
+                applicationDao.updateTutorial(
+                    Tutorial(
+                        existingTutorial.id,
+                        existingTutorial.packageName,
+                        existingTutorial.title,
+                        existingTutorial.videoUrl,
+                        newOverallRating
+                    )
+                )
+            }
 
             applicationDao.updateWatchedTutorial(
                 UsersTutorialsWatched(

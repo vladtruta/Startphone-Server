@@ -6,13 +6,26 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 class ApplicationDao(private val appDatabase: Database) : IAppDao {
 
+    override fun getTutorial(id: Int): Tutorial? = transaction(appDatabase) {
+        TutorialEntity.select { TutorialEntity.id eq id }.map {
+            Tutorial(
+                it[TutorialEntity.id],
+                it[TutorialEntity.packageName],
+                it[TutorialEntity.title],
+                it[TutorialEntity.videoUrl],
+                it[TutorialEntity.rating]
+            )
+        }.firstOrNull()
+    }
+
     override fun getTutorials(): List<Tutorial> = transaction(appDatabase) {
         TutorialEntity.selectAll().map {
             Tutorial(
                 it[TutorialEntity.id],
                 it[TutorialEntity.packageName],
                 it[TutorialEntity.title],
-                it[TutorialEntity.videoUrl]
+                it[TutorialEntity.videoUrl],
+                it[TutorialEntity.rating]
             )
         }
     }
@@ -23,6 +36,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
             insertStatement[packageName] = tutorial.packageName
             insertStatement[title] = tutorial.title
             insertStatement[videoUrl] = tutorial.videoUrl
+            insertStatement[rating] = tutorial.rating
         }
         Unit
     }
@@ -33,6 +47,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
             updateStatement[packageName] = tutorial.packageName
             updateStatement[title] = tutorial.title
             updateStatement[videoUrl] = tutorial.videoUrl
+            updateStatement[rating] = tutorial.rating
         }
         Unit
     }
@@ -42,7 +57,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
         Unit
     }
 
-    override fun getUserByIdToken(idToken: String): User? = transaction(appDatabase) {
+    override fun getUser(idToken: String): User? = transaction(appDatabase) {
         UserEntity.select { UserEntity.idToken eq idToken }.map {
             User(
                 it[UserEntity.idToken],

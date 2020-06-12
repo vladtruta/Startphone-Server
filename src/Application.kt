@@ -1,5 +1,6 @@
 package com.vladtruta
 
+import com.vladtruta.di.appModule
 import com.vladtruta.model.requests.ApplicationListRequest
 import com.vladtruta.model.requests.MissingTutorialRequest
 import com.vladtruta.model.requests.UserRequest
@@ -13,6 +14,7 @@ import io.ktor.request.receive
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
+import org.koin.core.context.startKoin
 
 private const val KEY_SUCCESS = "success"
 
@@ -21,6 +23,11 @@ fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
+
+    startKoin {
+        modules(appModule)
+    }
+
     install(ContentNegotiation) {
         gson {
             setPrettyPrinting()

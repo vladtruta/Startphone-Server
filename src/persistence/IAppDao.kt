@@ -3,12 +3,13 @@ package com.vladtruta.persistence
 import com.vladtruta.model.local.*
 
 interface IAppDao {
+    fun getTutorial(id: Int): Tutorial?
     fun getTutorials(): List<Tutorial>
     fun insertTutorial(tutorial: Tutorial)
     fun updateTutorial(tutorial: Tutorial)
     fun deleteTutorial(id: Int)
 
-    fun getUserByIdToken(idToken: String): User?
+    fun getUser(idToken: String): User?
     fun insertUser(user: User)
     fun updateUser(user: User)
 

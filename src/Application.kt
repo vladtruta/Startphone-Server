@@ -2,6 +2,7 @@ package com.vladtruta
 
 import com.vladtruta.di.appModule
 import com.vladtruta.di.databaseModule
+import com.vladtruta.model.jwt.EmailJWT
 import com.vladtruta.model.requests.ApplicationListRequest
 import com.vladtruta.model.requests.MissingTutorialRequest
 import com.vladtruta.model.requests.UserRequest
@@ -10,6 +11,11 @@ import com.vladtruta.repository.IAppRepo
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.auth.Authentication
+import io.ktor.auth.UserIdPrincipal
+import io.ktor.auth.authenticate
+import io.ktor.auth.jwt.jwt
+import io.ktor.auth.principal
 import io.ktor.features.ContentNegotiation
 import io.ktor.gson.gson
 import io.ktor.request.receive
@@ -44,53 +50,74 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
+    val simpleJwt = EmailJWT("startphone-jwt-secret")
+    install(Authentication) {
+        jwt {
+            verifier(simpleJwt.verifier)
+            validate {
+                UserIdPrincipal(it.payload.getClaim("email").asString())
+            }
+        }
+    }
+
     routing {
-        get("/tutorials") {
-            val packageName = call.request.queryParameters["packageName"]
-            if (packageName.isNullOrBlank()) {
-                call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to "Invalid package name"))
-            } else {
-                call.respond(mapOf(KEY_SUCCESS to true, KEY_DATA to repository.getTutorialsByPackageName(packageName)))
-            }
-        }
-
-        post("/application") {
-            val applicationListRequest = call.receive<ApplicationListRequest>()
-            try {
-                repository.insertOrUpdateApplications(applicationListRequest)
-                call.respond(mapOf(KEY_SUCCESS to true))
-            } catch (e: Exception) {
-                call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
-            }
-        }
-
         post("/user") {
             val userRequest = call.receive<UserRequest>()
             try {
                 repository.insertOrUpdateUser(userRequest)
-                call.respond(mapOf(KEY_SUCCESS to true))
+
+                val authToken = simpleJwt.sign(userRequest.email!!)
+                call.respond(mapOf(KEY_SUCCESS to true, KEY_DATA to authToken))
             } catch (e: Exception) {
                 call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
             }
         }
 
-        post("/missing") {
-            val missingTutorialRequest = call.receive<MissingTutorialRequest>()
-            try {
-                repository.updateTutorialMissing(missingTutorialRequest)
-                call.respond(mapOf(KEY_SUCCESS to true))
-            } catch (e: Exception) {
-                call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
+        authenticate {
+            get("/tutorials") {
+                val packageName = call.request.queryParameters["packageName"]
+                if (packageName.isNullOrBlank()) {
+                    call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to "Invalid package name"))
+                } else {
+                    call.respond(
+                        mapOf(
+                            KEY_SUCCESS to true,
+                            KEY_DATA to repository.getTutorialsByPackageName(packageName)
+                        )
+                    )
+                }
             }
-        }
 
-        post("/watched") {
-            val watchedTutorialRequest = call.receive<WatchedTutorialRequest>()
-            try {
-                repository.updateWatchedTutorial(watchedTutorialRequest)
-                call.respond(mapOf(KEY_SUCCESS to true))
-            } catch (e: Exception) {
-                call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
+            post("/application") {
+                val applicationListRequest = call.receive<ApplicationListRequest>()
+                try {
+                    repository.insertOrUpdateApplications(applicationListRequest)
+                    call.respond(mapOf(KEY_SUCCESS to true))
+                } catch (e: Exception) {
+                    call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
+                }
+            }
+
+            post("/missing") {
+                val missingTutorialRequest = call.receive<MissingTutorialRequest>()
+                try {
+                    val email = call.principal<UserIdPrincipal>()?.name ?: error("Invalid Session")
+                    repository.updateTutorialMissing(email, missingTutorialRequest)
+                    call.respond(mapOf(KEY_SUCCESS to true))
+                } catch (e: Exception) {
+                    call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
+                }
+            }
+
+            post("/watched") {
+                val watchedTutorialRequest = call.receive<WatchedTutorialRequest>()
+                try {
+                    val email = call.principal<UserIdPrincipal>()?.name ?: error("Invalid Session")
+                    repository.updateWatchedTutorial(email, watchedTutorialRequest)
+                    call.respond(mapOf(KEY_SUCCESS to true))
+                } catch (e: Exception) {
+                    call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
+                }
             }
         }
     }

@@ -50,9 +50,9 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
         }
     }
 
-    override fun updateWatchedTutorial(watchedTutorialRequest: WatchedTutorialRequest) {
+    override fun updateWatchedTutorial(email: String, watchedTutorialRequest: WatchedTutorialRequest) {
         val watchedTutorial =
-            watchedTutorialRequest.toWatchedTutorial() ?: throw Exception("Invalid watched tutorial request")
+            watchedTutorialRequest.toWatchedTutorial(email) ?: throw Exception("Invalid watched tutorial request")
 
         val watchedTutorialExists =
             applicationDao.getWatchedTutorial(watchedTutorial.email, watchedTutorial.tutorialId)
@@ -98,9 +98,9 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
         }
     }
 
-    override fun updateTutorialMissing(missingTutorialRequest: MissingTutorialRequest) {
+    override fun updateTutorialMissing(email: String, missingTutorialRequest: MissingTutorialRequest) {
         val tutorialMissing =
-            missingTutorialRequest.toMissingTutorial() ?: throw Exception("Invalid missing tutorial request")
+            missingTutorialRequest.toMissingTutorial(email) ?: throw Exception("Invalid missing tutorial request")
 
         val tutorialMissingExists =
             applicationDao.getTutorialMissing(tutorialMissing.email, tutorialMissing.packageName)

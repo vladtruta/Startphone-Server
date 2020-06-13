@@ -20,7 +20,7 @@ data class UserRequest(
         gender ?: return null
         email ?: return null
 
-        val dateOfBirthFormatted = DateTime(dateOfBirth.toLong())
+        val dateOfBirthFormatted = DateTime(dateOfBirth)
 
         return User(id, dateOfBirthFormatted, gender, email)
     }

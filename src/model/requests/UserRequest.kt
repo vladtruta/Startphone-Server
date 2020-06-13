@@ -3,6 +3,7 @@ package com.vladtruta.model.requests
 import com.google.gson.annotations.SerializedName
 import com.vladtruta.model.local.User
 import org.joda.time.DateTime
+import org.joda.time.LocalDate
 
 data class UserRequest(
     @SerializedName("id")
@@ -20,7 +21,7 @@ data class UserRequest(
         gender ?: return null
         email ?: return null
 
-        val dateOfBirthFormatted = DateTime(dateOfBirth)
+        val dateOfBirthFormatted = LocalDate(dateOfBirth)
 
         return User(id, dateOfBirthFormatted, gender, email)
     }

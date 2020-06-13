@@ -87,19 +87,18 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
         Unit
     }
 
-    override fun getWatchedTutorial(id: String, tutorialId: Int): UsersTutorialsWatched? =
-            transaction(appDatabase) {
-                UsersTutorialsWatchedEntity.select {
-                    (UsersTutorialsWatchedEntity.userId eq id) and (UsersTutorialsWatchedEntity.tutorialId eq tutorialId)
-                }.map {
-                    UsersTutorialsWatched(
-                            it[UsersTutorialsWatchedEntity.userId],
-                            it[UsersTutorialsWatchedEntity.tutorialId],
-                            it[UsersTutorialsWatchedEntity.watchCount],
-                            it[UsersTutorialsWatchedEntity.rating]
-                    )
-                }.firstOrNull()
-            }
+    override fun getWatchedTutorial(id: String, tutorialId: Int): UsersTutorialsWatched? = transaction(appDatabase) {
+        UsersTutorialsWatchedEntity.select {
+            (UsersTutorialsWatchedEntity.userId eq id) and (UsersTutorialsWatchedEntity.tutorialId eq tutorialId)
+        }.map {
+            UsersTutorialsWatched(
+                    it[UsersTutorialsWatchedEntity.userId],
+                    it[UsersTutorialsWatchedEntity.tutorialId],
+                    it[UsersTutorialsWatchedEntity.watchCount],
+                    it[UsersTutorialsWatchedEntity.rating]
+            )
+        }.firstOrNull()
+    }
 
     override fun insertWatchedTutorial(usersTutorialsWatched: UsersTutorialsWatched) = transaction(appDatabase) {
         UsersTutorialsWatchedEntity.insert { insertStatement ->
@@ -121,18 +120,17 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
         Unit
     }
 
-    override fun getTutorialMissing(id: String, packageName: String): UsersTutorialMissing? =
-            transaction(appDatabase) {
-                UsersTutorialMissingRequestsEntity.select {
-                    (UsersTutorialMissingRequestsEntity.userId eq id) and (UsersTutorialMissingRequestsEntity.packageName eq packageName)
-                }.map {
-                    UsersTutorialMissing(
-                            it[UsersTutorialMissingRequestsEntity.userId],
-                            it[UsersTutorialMissingRequestsEntity.packageName],
-                            it[UsersTutorialMissingRequestsEntity.requestCount]
-                    )
-                }.firstOrNull()
-            }
+    override fun getTutorialMissing(id: String, packageName: String): UsersTutorialMissing? = transaction(appDatabase) {
+        UsersTutorialMissingRequestsEntity.select {
+            (UsersTutorialMissingRequestsEntity.userId eq id) and (UsersTutorialMissingRequestsEntity.packageName eq packageName)
+        }.map {
+            UsersTutorialMissing(
+                    it[UsersTutorialMissingRequestsEntity.userId],
+                    it[UsersTutorialMissingRequestsEntity.packageName],
+                    it[UsersTutorialMissingRequestsEntity.requestCount]
+            )
+        }.firstOrNull()
+    }
 
     override fun insertTutorialMissing(usersTutorialMissing: UsersTutorialMissing) = transaction(appDatabase) {
         UsersTutorialMissingRequestsEntity.insert { insertStatement ->
@@ -170,7 +168,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
         Unit
     }
 
-    override fun updateApplication(application: Application) {
+    override fun updateApplication(application: Application) = transaction(appDatabase) {
         ApplicationEntity.update({ ApplicationEntity.packageName eq application.packageName }) { updateStatement ->
             updateStatement[packageName] = application.packageName
             updateStatement[name] = application.name

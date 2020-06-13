@@ -60,7 +60,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
         UserEntity.select { UserEntity.id eq id }.map {
             User(
                     it[UserEntity.id],
-                    it[UserEntity.dateOfBirth],
+                    it[UserEntity.dateOfBirth].toLocalDate(),
                     it[UserEntity.gender],
                     it[UserEntity.email]
             )
@@ -71,7 +71,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
         UserEntity.insert { insertStatement ->
             insertStatement[id] = user.id
             insertStatement[gender] = user.gender
-            insertStatement[dateOfBirth] = user.dateOfBirth
+            insertStatement[dateOfBirth] = user.dateOfBirth.toDateTimeAtStartOfDay()
             insertStatement[email] = user.email
         }
         Unit
@@ -81,7 +81,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
         UserEntity.update({ UserEntity.id eq user.id }) { updateStatement ->
             updateStatement[id] = user.id
             updateStatement[gender] = user.gender
-            updateStatement[dateOfBirth] = user.dateOfBirth
+            updateStatement[dateOfBirth] = user.dateOfBirth.toDateTimeAtStartOfDay()
             updateStatement[email] = user.email
         }
         Unit

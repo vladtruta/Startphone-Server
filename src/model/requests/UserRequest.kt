@@ -8,15 +8,20 @@ data class UserRequest(
     @SerializedName("id")
     val id: String? = null,
     @SerializedName("dateOfBirth")
-    val dateOfBirth: DateTime? = null,
+    val dateOfBirth: String? = null,
     @SerializedName("gender")
-    val gender: Char? = null
+    val gender: Char? = null,
+    @SerializedName("email")
+    val email: String? = null
 ) {
     fun toUser(): User? {
         id ?: return null
         dateOfBirth ?: return null
         gender ?: return null
+        email ?: return null
 
-        return User(id, dateOfBirth, gender)
+        val dateOfBirthFormatted = DateTime(dateOfBirth.toLong())
+
+        return User(id, dateOfBirthFormatted, gender, email)
     }
 }

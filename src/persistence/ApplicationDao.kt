@@ -9,11 +9,11 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
     override fun getTutorial(id: Int): Tutorial? = transaction(appDatabase) {
         TutorialEntity.select { TutorialEntity.id eq id }.map {
             Tutorial(
-                it[TutorialEntity.packageName],
-                it[TutorialEntity.title],
-                it[TutorialEntity.videoUrl],
-                it[TutorialEntity.rating],
-                it[TutorialEntity.id]
+                    it[TutorialEntity.packageName],
+                    it[TutorialEntity.title],
+                    it[TutorialEntity.videoUrl],
+                    it[TutorialEntity.rating],
+                    it[TutorialEntity.id]
             )
         }.firstOrNull()
     }
@@ -21,11 +21,11 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
     override fun getTutorials(): List<Tutorial> = transaction(appDatabase) {
         TutorialEntity.selectAll().map {
             Tutorial(
-                it[TutorialEntity.packageName],
-                it[TutorialEntity.title],
-                it[TutorialEntity.videoUrl],
-                it[TutorialEntity.rating],
-                it[TutorialEntity.id]
+                    it[TutorialEntity.packageName],
+                    it[TutorialEntity.title],
+                    it[TutorialEntity.videoUrl],
+                    it[TutorialEntity.rating],
+                    it[TutorialEntity.id]
             )
         }
     }
@@ -59,9 +59,10 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
     override fun getUser(id: String): User? = transaction(appDatabase) {
         UserEntity.select { UserEntity.id eq id }.map {
             User(
-                it[UserEntity.id],
-                it[UserEntity.dateOfBirth],
-                it[UserEntity.gender]
+                    it[UserEntity.id],
+                    it[UserEntity.dateOfBirth],
+                    it[UserEntity.gender],
+                    it[UserEntity.email]
             )
         }.firstOrNull()
     }
@@ -71,6 +72,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
             insertStatement[id] = user.id
             insertStatement[gender] = user.gender
             insertStatement[dateOfBirth] = user.dateOfBirth
+            insertStatement[email] = user.email
         }
         Unit
     }
@@ -80,23 +82,24 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
             updateStatement[id] = user.id
             updateStatement[gender] = user.gender
             updateStatement[dateOfBirth] = user.dateOfBirth
+            updateStatement[email] = user.email
         }
         Unit
     }
 
     override fun getWatchedTutorial(id: String, tutorialId: Int): UsersTutorialsWatched? =
-        transaction(appDatabase) {
-            UsersTutorialsWatchedEntity.select {
-                (UsersTutorialsWatchedEntity.userId eq id) and (UsersTutorialsWatchedEntity.tutorialId eq tutorialId)
-            }.map {
-                UsersTutorialsWatched(
-                    it[UsersTutorialsWatchedEntity.userId],
-                    it[UsersTutorialsWatchedEntity.tutorialId],
-                    it[UsersTutorialsWatchedEntity.watchCount],
-                    it[UsersTutorialsWatchedEntity.rating]
-                )
-            }.firstOrNull()
-        }
+            transaction(appDatabase) {
+                UsersTutorialsWatchedEntity.select {
+                    (UsersTutorialsWatchedEntity.userId eq id) and (UsersTutorialsWatchedEntity.tutorialId eq tutorialId)
+                }.map {
+                    UsersTutorialsWatched(
+                            it[UsersTutorialsWatchedEntity.userId],
+                            it[UsersTutorialsWatchedEntity.tutorialId],
+                            it[UsersTutorialsWatchedEntity.watchCount],
+                            it[UsersTutorialsWatchedEntity.rating]
+                    )
+                }.firstOrNull()
+            }
 
     override fun insertWatchedTutorial(usersTutorialsWatched: UsersTutorialsWatched) = transaction(appDatabase) {
         UsersTutorialsWatchedEntity.insert { insertStatement ->
@@ -119,17 +122,17 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
     }
 
     override fun getTutorialMissing(id: String, packageName: String): UsersTutorialMissing? =
-        transaction(appDatabase) {
-            UsersTutorialMissingRequestsEntity.select {
-                (UsersTutorialMissingRequestsEntity.userId eq id) and (UsersTutorialMissingRequestsEntity.packageName eq packageName)
-            }.map {
-                UsersTutorialMissing(
-                    it[UsersTutorialMissingRequestsEntity.userId],
-                    it[UsersTutorialMissingRequestsEntity.packageName],
-                    it[UsersTutorialMissingRequestsEntity.requestCount]
-                )
-            }.firstOrNull()
-        }
+            transaction(appDatabase) {
+                UsersTutorialMissingRequestsEntity.select {
+                    (UsersTutorialMissingRequestsEntity.userId eq id) and (UsersTutorialMissingRequestsEntity.packageName eq packageName)
+                }.map {
+                    UsersTutorialMissing(
+                            it[UsersTutorialMissingRequestsEntity.userId],
+                            it[UsersTutorialMissingRequestsEntity.packageName],
+                            it[UsersTutorialMissingRequestsEntity.requestCount]
+                    )
+                }.firstOrNull()
+            }
 
     override fun insertTutorialMissing(usersTutorialMissing: UsersTutorialMissing) = transaction(appDatabase) {
         UsersTutorialMissingRequestsEntity.insert { insertStatement ->
@@ -151,12 +154,12 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
 
     override fun getApplication(packageName: String): Application? = transaction(appDatabase) {
         ApplicationEntity.select { ApplicationEntity.packageName eq packageName }
-            .map {
-                Application(
-                    it[ApplicationEntity.packageName],
-                    it[ApplicationEntity.name]
-                )
-            }.firstOrNull()
+                .map {
+                    Application(
+                            it[ApplicationEntity.packageName],
+                            it[ApplicationEntity.name]
+                    )
+                }.firstOrNull()
     }
 
     override fun insertApplication(application: Application) = transaction(appDatabase) {

@@ -73,6 +73,16 @@ fun Application.module(testing: Boolean = false) {
             }
         }
 
+        post("/application") {
+            val applicationListRequest = call.receive<ApplicationListRequest>()
+            try {
+                repository.insertOrUpdateApplications(applicationListRequest)
+                call.respond(mapOf(KEY_SUCCESS to true))
+            } catch (e: Exception) {
+                call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
+            }
+        }
+
         authenticate {
             get("/tutorials") {
                 val packageName = call.request.queryParameters["packageName"]
@@ -85,16 +95,6 @@ fun Application.module(testing: Boolean = false) {
                             KEY_DATA to repository.getTutorialsByPackageName(packageName)
                         )
                     )
-                }
-            }
-
-            post("/application") {
-                val applicationListRequest = call.receive<ApplicationListRequest>()
-                try {
-                    repository.insertOrUpdateApplications(applicationListRequest)
-                    call.respond(mapOf(KEY_SUCCESS to true))
-                } catch (e: Exception) {
-                    call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
                 }
             }
 

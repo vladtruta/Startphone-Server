@@ -41,22 +41,22 @@ val tutorials = mutableListOf(
     ),
     Tutorial(
         "com.google.android.apps.maps",
-        "How do I navigate the map?",
-        "http://truta.ro/licenta/how_to_navigate_map.mp4",
+        "How do I rotate the map?",
+        "http://truta.ro/licenta/how_to_rotate_map.mp4",
         1.0,
         6
     ),
     Tutorial(
         "com.google.android.apps.maps",
-        "How do I rotate the map?",
-        "http://truta.ro/licenta/how_to_rotate_map.mp4",
+        "How do I search for a place on the map?",
+        "http://truta.ro/licenta/how_to_search_map.mp4",
         1.0,
         7
     ),
     Tutorial(
         "com.google.android.apps.maps",
-        "How do I search for a place on the map?",
-        "http://truta.ro/licenta/how_to_search_map.mp4",
+        "How do I navigate the map?",
+        "http://truta.ro/licenta/how_to_navigate_map.mp4",
         1.0,
         8
     ),

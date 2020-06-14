@@ -10,6 +10,7 @@ import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
 import io.ktor.auth.UserIdPrincipal
+import io.ktor.auth.authenticate
 import io.ktor.auth.jwt.jwt
 import io.ktor.auth.principal
 import io.ktor.features.ContentNegotiation
@@ -79,7 +80,7 @@ fun Application.module(testing: Boolean = false) {
             }
         }
 
-       // authenticate {
+        authenticate {
             get("/tutorials") {
                 val packageName = call.request.queryParameters["packageName"]
                 if (packageName.isNullOrBlank()) {
@@ -126,7 +127,7 @@ fun Application.module(testing: Boolean = false) {
                     call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
                 }
             }
-       // }
+        }
     }
 }
 

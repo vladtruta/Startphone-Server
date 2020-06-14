@@ -13,8 +13,25 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
     override fun initialize() {
         applicationDao.reset()
 
-        applications.forEach { applicationDao.insertApplication(it) }
-        tutorials.forEach { applicationDao.insertTutorial(it) }
+        applications.forEach { application ->
+            val appExists = applicationDao.getApplication(application.packageName)
+
+            appExists?.let {
+                applicationDao.updateApplication(it)
+            } ?: run {
+                applicationDao.insertApplication(application)
+            }
+        }
+
+        tutorials.forEach { tutorial ->
+            val tutorialExists = applicationDao.getTutorial(tutorial.id)
+
+            tutorialExists?.let {
+                applicationDao.updateTutorial(tutorial)
+            } ?: run {
+                applicationDao.insertTutorial(tutorial)
+            }
+        }
     }
 
     override fun getTutorialsByPackageName(packageName: String): List<TutorialResponse> {

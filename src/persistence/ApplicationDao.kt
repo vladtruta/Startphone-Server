@@ -204,7 +204,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
     }
 
     override fun reset() = transaction(appDatabase) {
-        SchemaUtils.drop(UsersTutorialMissingRequestsEntity, UsersTutorialsWatchedEntity, UsersTutorialsRatedEntity, UserEntity, ApplicationEntity, TutorialEntity)
-        SchemaUtils.create(UsersTutorialMissingRequestsEntity, UsersTutorialsWatchedEntity, UsersTutorialsRatedEntity, UserEntity, ApplicationEntity, TutorialEntity)
+        //SchemaUtils.drop(UsersTutorialMissingRequestsEntity, UsersTutorialsWatchedEntity, UsersTutorialsRatedEntity, UserEntity, ApplicationEntity, TutorialEntity)
+        //SchemaUtils.create(UsersTutorialMissingRequestsEntity, UsersTutorialsWatchedEntity, UsersTutorialsRatedEntity, UserEntity, ApplicationEntity, TutorialEntity)
     }
 }

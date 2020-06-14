@@ -8,13 +8,15 @@ val tutorials = mutableListOf(
         "com.google.android.apps.messaging",
         "How do I read a message?",
         "https://media.vlipsy.com/vlips/tVmiYVBz/480p.mp4",
-        0.7
+        0.7,
+        1
     ),
     Tutorial(
         "com.google.android.apps.messaging",
         "How do I write a message?",
         "https://media.vlipsy.com/vlips/tVmiYVBz/480p.mp4",
-        1.0
+        1.0,
+        2
     )
 )
 

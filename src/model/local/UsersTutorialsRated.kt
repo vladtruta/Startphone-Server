@@ -1,7 +1,7 @@
 package com.vladtruta.model.local
 
-data class UsersTutorialsWatched(
+data class UsersTutorialsRated(
     val userId: String,
     val tutorialId: Int,
-    val watchCount: Int
+    val rating: Double
 )

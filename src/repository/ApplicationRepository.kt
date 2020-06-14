@@ -2,11 +2,9 @@ package com.vladtruta.repository
 
 import com.vladtruta.model.local.Tutorial
 import com.vladtruta.model.local.UsersTutorialMissing
+import com.vladtruta.model.local.UsersTutorialsRated
 import com.vladtruta.model.local.UsersTutorialsWatched
-import com.vladtruta.model.requests.ApplicationListRequest
-import com.vladtruta.model.requests.MissingTutorialRequest
-import com.vladtruta.model.requests.UserRequest
-import com.vladtruta.model.requests.WatchedTutorialRequest
+import com.vladtruta.model.requests.*
 import com.vladtruta.model.responses.TutorialResponse
 import com.vladtruta.persistence.IAppDao
 
@@ -50,19 +48,43 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
         }
     }
 
-    override fun updateWatchedTutorial(id: String, watchedTutorialRequest: WatchedTutorialRequest) {
+    override fun insertOrUpdateWatchedTutorial(id: String, watchedTutorialRequest: WatchedTutorialRequest) {
         val watchedTutorial =
             watchedTutorialRequest.toWatchedTutorial(id) ?: throw Exception("Invalid watched tutorial request")
 
         val watchedTutorialExists =
             applicationDao.getWatchedTutorial(watchedTutorial.id, watchedTutorial.tutorialId)
         watchedTutorialExists?.let {
-            val givenRating = if (watchedTutorial.useful) 1.0 else 0.0
+            applicationDao.updateWatchedTutorial(
+                UsersTutorialsWatched(
+                    watchedTutorial.id,
+                    watchedTutorial.tutorialId,
+                    it.watchCount + 1
+                )
+            )
+        } ?: run {
+            applicationDao.insertWatchedTutorial(
+                UsersTutorialsWatched(
+                    watchedTutorial.id,
+                    watchedTutorial.tutorialId,
+                    1
+                )
+            )
+        }
+    }
+
+    override fun insertOrUpdateRatedTutorial(id: String, ratedTutorialRequest: RatedTutorialRequest) {
+        val ratedTutorial =
+            ratedTutorialRequest.toRatedTutorial(id) ?: throw Exception("Invalid rated tutorial request")
+
+        val ratedTutorialExists = applicationDao.getRatedTutorial(ratedTutorial.id, ratedTutorial.tutorialId)
+        ratedTutorialExists?.let {
+            val givenRating = if (ratedTutorial.useful) 1.0 else 0.0
 
             // Compute rating for tutorial, according to each user
             val newRating = (it.rating + givenRating) / 2
 
-            val tutorial = applicationDao.getTutorial(watchedTutorial.tutorialId)
+            val tutorial = applicationDao.getTutorial(ratedTutorial.tutorialId)
             tutorial?.let { existingTutorial ->
                 // Compute overall rating for tutorial
                 val newOverallRating = (existingTutorial.rating + givenRating) / 2
@@ -78,27 +100,25 @@ class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
                 )
             }
 
-            applicationDao.updateWatchedTutorial(
-                UsersTutorialsWatched(
-                    watchedTutorial.id,
-                    watchedTutorial.tutorialId,
-                    it.watchCount + 1,
+            applicationDao.updateRatedTutorial(
+                UsersTutorialsRated(
+                    ratedTutorial.id,
+                    ratedTutorial.tutorialId,
                     newRating
                 )
             )
         } ?: run {
-            applicationDao.insertWatchedTutorial(
-                UsersTutorialsWatched(
-                    watchedTutorial.id,
-                    watchedTutorial.tutorialId,
-                    1,
-                    if (watchedTutorial.useful) 1.0 else 0.0
+            applicationDao.insertRatedTutorial(
+                UsersTutorialsRated(
+                    ratedTutorial.id,
+                    ratedTutorial.tutorialId,
+                    if (ratedTutorial.useful) 1.0 else 0.0
                 )
             )
         }
     }
 
-    override fun updateTutorialMissing(id: String, missingTutorialRequest: MissingTutorialRequest) {
+    override fun insertOrUpdateTutorialMissing(id: String, missingTutorialRequest: MissingTutorialRequest) {
         val tutorialMissing =
             missingTutorialRequest.toMissingTutorial(id) ?: throw Exception("Invalid missing tutorial request")
 

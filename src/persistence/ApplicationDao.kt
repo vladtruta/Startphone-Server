@@ -94,8 +94,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
             UsersTutorialsWatched(
                     it[UsersTutorialsWatchedEntity.userId],
                     it[UsersTutorialsWatchedEntity.tutorialId],
-                    it[UsersTutorialsWatchedEntity.watchCount],
-                    it[UsersTutorialsWatchedEntity.rating]
+                    it[UsersTutorialsWatchedEntity.watchCount]
             )
         }.firstOrNull()
     }
@@ -105,7 +104,6 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
             insertStatement[userId] = usersTutorialsWatched.userId
             insertStatement[tutorialId] = usersTutorialsWatched.tutorialId
             insertStatement[watchCount] = usersTutorialsWatched.watchCount
-            insertStatement[rating] = usersTutorialsWatched.rating
         }
         Unit
     }
@@ -115,7 +113,36 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
             updateStatement[userId] = usersTutorialsWatched.userId
             updateStatement[tutorialId] = usersTutorialsWatched.tutorialId
             updateStatement[watchCount] = usersTutorialsWatched.watchCount
-            updateStatement[rating] = usersTutorialsWatched.rating
+        }
+        Unit
+    }
+
+    override fun getRatedTutorial(id: String, tutorialId: Int): UsersTutorialsRated?  = transaction(appDatabase) {
+        UsersTutorialsRatedEntity.select {
+            (UsersTutorialsRatedEntity.userId eq id) and (UsersTutorialsRatedEntity.tutorialId eq tutorialId)
+        }.map {
+            UsersTutorialsRated(
+                it[UsersTutorialsRatedEntity.userId],
+                it[UsersTutorialsRatedEntity.tutorialId],
+                it[UsersTutorialsRatedEntity.rating]
+            )
+        }.firstOrNull()
+    }
+
+    override fun insertRatedTutorial(usersTutorialsRated: UsersTutorialsRated) = transaction(appDatabase) {
+        UsersTutorialsRatedEntity.insert { insertStatement ->
+            insertStatement[userId] = usersTutorialsRated.userId
+            insertStatement[tutorialId] = usersTutorialsRated.tutorialId
+            insertStatement[rating] = usersTutorialsRated.rating
+        }
+        Unit
+    }
+
+    override fun updateRatedTutorial(usersTutorialsRated: UsersTutorialsRated) = transaction(appDatabase) {
+        UsersTutorialsRatedEntity.update({ (UsersTutorialsRatedEntity.userId eq usersTutorialsRated.userId) and (UsersTutorialsRatedEntity.tutorialId eq usersTutorialsRated.tutorialId) }) { updateStatement ->
+            updateStatement[userId] = usersTutorialsRated.userId
+            updateStatement[tutorialId] = usersTutorialsRated.tutorialId
+            updateStatement[rating] = usersTutorialsRated.rating
         }
         Unit
     }
@@ -177,7 +204,7 @@ class ApplicationDao(private val appDatabase: Database) : IAppDao {
     }
 
     override fun reset() = transaction(appDatabase) {
-        SchemaUtils.drop(UsersTutorialMissingRequestsEntity, UsersTutorialsWatchedEntity, UserEntity, ApplicationEntity, TutorialEntity)
-        SchemaUtils.create(UsersTutorialMissingRequestsEntity, UsersTutorialsWatchedEntity, UserEntity, ApplicationEntity, TutorialEntity)
+        SchemaUtils.drop(UsersTutorialMissingRequestsEntity, UsersTutorialsWatchedEntity, UsersTutorialsRatedEntity, UserEntity, ApplicationEntity, TutorialEntity)
+        SchemaUtils.create(UsersTutorialMissingRequestsEntity, UsersTutorialsWatchedEntity, UsersTutorialsRatedEntity, UserEntity, ApplicationEntity, TutorialEntity)
     }
 }

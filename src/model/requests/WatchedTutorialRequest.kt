@@ -5,14 +5,11 @@ import com.vladtruta.model.local.WatchedTutorial
 
 data class WatchedTutorialRequest(
     @SerializedName("tutorialId")
-    val tutorialId: Int? = null,
-    @SerializedName("useful")
-    val useful: Boolean? = null
+    val tutorialId: Int? = null
 ) {
     fun toWatchedTutorial(id: String): WatchedTutorial? {
         tutorialId ?: return null
-        useful ?: return null
 
-        return WatchedTutorial(id, tutorialId, useful)
+        return WatchedTutorial(id, tutorialId)
     }
 }

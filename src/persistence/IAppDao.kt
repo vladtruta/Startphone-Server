@@ -17,6 +17,10 @@ interface IAppDao {
     fun insertWatchedTutorial(usersTutorialsWatched: UsersTutorialsWatched)
     fun updateWatchedTutorial(usersTutorialsWatched: UsersTutorialsWatched)
 
+    fun getRatedTutorial(id: String, tutorialId: Int): UsersTutorialsRated?
+    fun insertRatedTutorial(usersTutorialsRated: UsersTutorialsRated)
+    fun updateRatedTutorial(usersTutorialsRated: UsersTutorialsRated)
+
     fun getTutorialMissing(id: String, packageName: String): UsersTutorialMissing?
     fun insertTutorialMissing(usersTutorialMissing: UsersTutorialMissing)
     fun updateTutorialMissing(usersTutorialMissing: UsersTutorialMissing)

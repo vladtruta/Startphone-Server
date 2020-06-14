@@ -3,10 +3,7 @@ package com.vladtruta
 import com.vladtruta.di.appModule
 import com.vladtruta.di.databaseModule
 import com.vladtruta.model.jwt.SimpleJWT
-import com.vladtruta.model.requests.ApplicationListRequest
-import com.vladtruta.model.requests.MissingTutorialRequest
-import com.vladtruta.model.requests.UserRequest
-import com.vladtruta.model.requests.WatchedTutorialRequest
+import com.vladtruta.model.requests.*
 import com.vladtruta.repository.IAppRepo
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -101,7 +98,7 @@ fun Application.module(testing: Boolean = false) {
                 val missingTutorialRequest = call.receive<MissingTutorialRequest>()
                 try {
                     val id = call.principal<UserIdPrincipal>()?.name ?: error("Invalid Session")
-                    repository.updateTutorialMissing(id, missingTutorialRequest)
+                    repository.insertOrUpdateTutorialMissing(id, missingTutorialRequest)
                     call.respond(mapOf(KEY_SUCCESS to true))
                 } catch (e: Exception) {
                     call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
@@ -112,7 +109,18 @@ fun Application.module(testing: Boolean = false) {
                 val watchedTutorialRequest = call.receive<WatchedTutorialRequest>()
                 try {
                     val id = call.principal<UserIdPrincipal>()?.name ?: error("Invalid Session")
-                    repository.updateWatchedTutorial(id, watchedTutorialRequest)
+                    repository.insertOrUpdateWatchedTutorial(id, watchedTutorialRequest)
+                    call.respond(mapOf(KEY_SUCCESS to true))
+                } catch (e: Exception) {
+                    call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))
+                }
+            }
+
+            post("/rated") {
+                val ratedTutorialRequest = call.receive<RatedTutorialRequest>()
+                try {
+                    val id = call.principal<UserIdPrincipal>()?.name ?: error("Invalid Session")
+                    repository.insertOrUpdateRatedTutorial(id, ratedTutorialRequest)
                     call.respond(mapOf(KEY_SUCCESS to true))
                 } catch (e: Exception) {
                     call.respond(mapOf(KEY_SUCCESS to false, KEY_ERROR to e.message))

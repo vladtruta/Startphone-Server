@@ -11,8 +11,6 @@ import com.vladtruta.persistence.IAppDao
 class ApplicationRepository(private val applicationDao: IAppDao) : IAppRepo {
 
     override fun initialize() {
-        applicationDao.reset()
-
         applications.forEach { application ->
             val appExists = applicationDao.getApplication(application.packageName)
 

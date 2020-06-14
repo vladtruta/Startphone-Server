@@ -16,6 +16,6 @@ private fun provideDatabase(): Database {
         "jdbc:mysql://localhost:3306/startphone?serverTimezone=UTC",
         "com.mysql.cj.jdbc.Driver",
         "root",
-        "toor"
+        "12345678"
     )
 }
